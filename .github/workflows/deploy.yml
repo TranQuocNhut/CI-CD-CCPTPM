@@ -1,0 +1,32 @@
+name: Build and Deploy to Docker Hub
+
+# Kích hoạt khi có code đẩy lên nhánh main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Action lấy code từ Github
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Action Đăng nhập Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3. Action Đóng gói & Đẩy Image
+      - name: Build and push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Thay "ten-ung-dung" thành tên mà bạn muốn đặt cho image
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/CI-CD:latest
